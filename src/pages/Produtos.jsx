@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { Box, Grid, Card, CardMedia, CardContent, Typography, Button, TextField, MenuItem } from "@mui/material";
+import { Box, Container, Grid, Card, IconButton, CardMedia, CardContent, Typography, Button, TextField, MenuItem } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { adicionarItem, salvarDadosCliente } from "../redux/reducers";
+import { adicionarItem, removerItem } from "../redux/reducers.js";
+import { Field, reduxForm } from 'redux-form';
+
 
 // Importação Imagens
 import produto01 from "../assets/produtos/produto-01.jpeg";
@@ -17,7 +19,7 @@ import produto08 from "../assets/produtos/produto-08.jpeg";
 // Importação SVG
 import AddIcon from "../assets/produtos/baseline-add-24px.svg";
 import RemoveIcon from "../assets/produtos/baseline-remove-24px.svg";
-import ArrowIcon from "../assets/produtos/baseline-arrow_drop_down-24px.svg"
+import { destroy } from "redux-form";
 
 const produtos = [
     { id: 1, nome: 'AirPods Apple Fones de ouvido', preco: 1499, imagem: produto01 },
@@ -30,98 +32,158 @@ const produtos = [
     { id: 8, nome: 'Carregador USB 5W Apple', preco: 149, imagem: produto08 },
 ];
 
-function Produtos(){
+const renderTextField = ({ input, label, placeholder, meta: { touched, error }, ...custom }) => (
+    <TextField
+        label = {label}
+        placeholder = {placeholder}
+        fullWidth 
+        error = {touched && !!error} // Fica vermelho se foi tocado e tem erro
+        helperText = {touched && error} // Mostra a mensagem "Campo obrigatório"
+        variant = "outlined"
+        {...input}
+    />
+);
+
+const renderSelectField = ({ input, label, meta: { touched, error }, children }) => (
+    <TextField
+        select
+        label = {label}
+        fullWidth
+        error = {touched && !!error} 
+        helperText = {touched && error}
+        {...input}
+    >
+        {children}
+    </TextField>
+);
+
+let Produtos = (props) => {
+    const { handleSubmit } = props;
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const total = useSelector((state) => state.carrinho?.total || 0);
-    const [cliente, setCliente] = useState({ nome: '', email: '', sexo: ''});
-
-    const handleAdd = (produto) => {
-        dispatch(adicionarItem({ ...produto, quantidade: 1, subtotal: produto.preco}));
+    const total = useSelector((state) => state.carrinho.total || 0);
+    const itensNoCarrinho = useSelector((state) => state.carrinho.itens || []);
+    
+    const getQuantidade = (id) => {
+        console.log("Itens no carrinho:", itensNoCarrinho);
+        console.log("Procurando ID:", id);
+        const item = itensNoCarrinho.find(i => i.id === id);
+        return item ? item.quantidade : 0;  
     };
 
+   const handleAdd = (produto) => {
+        dispatch(adicionarItem(produto)); 
+    };
+ 
     const handleRemove = (produto) => {
-        dispatch({ type: 'carrinho/removerItem', payload: produto.id });
+        dispatch(removerItem(produto.id));
     };
 
-    const handleChange = (e) => {
-        setCliente({ ...cliente, [e.target.name]: e.target.value });
-    };
-
-    const handleFinalizar = () => {
-        dispatch(salvarDadosCliente(cliente));
+    const onSubmit = (values) => {
+        console.log("Dados do Cliente:", values); // Aqui estarão o nome, email e sexo
         navigate('/finalizacao');
     };
 
     return (
-        <Box p={4}>
-            <Typography variant="h4" gutterBottom>Produtos</Typography>
-            <Grid container spacing={3}>
-                {produtos.map((produto) => (
-                    <Grid item xs={12} sm={6} md={3} key={produto.id}>
-                        <Card>
-                            <CardMedia component="img" height="180" image={produto.imagem} alt={produto.nome}/>
-                                <CardContent>
-                                    <Typography variant="h6">{produto.nome}</Typography>
-                                    <Typography>R$ {produto.preco.toFixed(2)}</Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Em até 12x de R$ {(produto.preco / 12).toFixed(2)} <br/>
-                                        R$ {(produto.preco * 0.9).toFixed(2)} À vista (10% off)
-                                    </Typography>
-                                </CardContent>
-                                <Box display="flex" justifyContent="space-between" p={2}>
-                                    <Button
-                                        variant = "contained"
-                                        startIcon = {<img src={AddIcon} alt="" style={{ width: 20 }} />}
-                                        onClick = {() => handleAdd(produto)}
-                                    >
-                                        ADICIONAR
-                                    </Button>
-                                    <Button
-                                        variant = "outlined"
-                                        color = "error"
-                                        startIcon = {<img src={RemoveIcon} alt="" style={{ width: 20 }} />}
-                                        onClick = {() => handleRemove(produto)}
-                                    >
-                                        REMOVER
-                                    </Button>
-                                </Box>
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
+       <Container maxWidth="lg" sx={{ py: 4, bgcolor: '#fff' }}>
+    <Typography variant="h5" sx={{ mb: 3, borderBottom: '1px solid #eeeeee', pb: 1, color: '#546e7a', fontWeight: 500 }}>
+        Produtos
+    </Typography>
+    <Grid container spacing={3}>
+        {produtos.map((produto) => (
+            <Grid item xs={12} sm={6} md={3} key={produto.id}>
+                <Card elevation={0} sx={{ 
+                    textAlign: 'center', p: 2, height: '100%', display: 'flex', flexDirection: 'column', 
+                    transition: 'all 0.3s ease', border: '1px solid transparent',
+                    '&:hover': { 
+                        border: '1px solid #e0e0e0', 
+                        boxShadow: '0px 4px 20px rgba(0,0,0,0.08)',
+                        '& .controles-hover': { opacity: 1 } // Revela os botões no hover
+                    } 
+                }}>
+                    <CardMedia component="img" image={produto.imagem} sx={{ height: 130, objectFit: 'contain', mb: 2 }} />
+                    <CardContent sx={{ p: 0, flexGrow: 1 }}>
+                        <Typography variant="body2" sx={{ color: '#999', fontSize: '0.85rem', mb: 1, minHeight: 40 }}>
+                            {produto.nome}
+                        </Typography>
+                        <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333' }}>
+                            R$ {produto.preco.toFixed(2).replace('.', ',')}
+                        </Typography>
+                        <Typography variant="caption" display="block" color="text.secondary">
+                            Em até 12x de R$ {(produto.preco / 12).toFixed(2).replace('.', ',')}
+                        </Typography>
+                        <Typography variant="caption" display="block" color="text.secondary" sx={{ mb: 2 }}>
+                            R$ {(produto.preco * 0.9).toFixed(2).replace('.', ',')} à vista (10% de desconto)
+                        </Typography>
+                    </CardContent>
 
-            <Box mt={5} component="form">
-                <Typography variant="h5" gutterBottom>Dados do Cliente</Typography>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={4}>
-                        <TextField label="Nome" name="nome" value={cliente.nome} onChange={handleChange} fullWidth required/>
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <TextField label="Email" name="email" value={cliente.email} onChange={handleChange} fullWidth required/>
-                    </Grid>
-                        <Grid item xs={12} sm={4}>
-                            <TextField label="Sexo" name="sexo" value={cliente.sexo} onChange={handleChange} select fullWidth>
-                                <MenuItem value="Feminino">Feminino</MenuItem>
-                                <MenuItem value="Masculino">Masculino</MenuItem>
-                                <MenuItem value="Outro">Outro</MenuItem>
-                            </TextField>
-                        </Grid>
-                </Grid>
-                <Box mt={4} display="flex" justifyContent="space-between" alignItems="center">
-                    <Typography variant="h6">Total: R$ {total.toFixed(2)}</Typography>
-                    <Button
-                        variant = "contained"
-                        color = "success"
-                        onClick = {handleFinalizar}
-                        disabled = {!cliente.nome || !cliente.email} 
-                    >
-                        FINALIZAR COMPRA
-                    </Button>
-                </Box>
-            </Box>
+                    {/* BOX DE CONTROLES COM OPACIDADE ZERO POR PADRÃO */}
+                    <Box className="controles-hover" sx={{ opacity: 0, transition: 'opacity 0.3s ease', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 2 }}>
+                            <IconButton onClick={() => handleRemove(produto)} sx={{ bgcolor: '#cfd8dc', width: 32, height: 32, '&:hover': { bgcolor: '#b0bec5' } }}>
+                                <img src={RemoveIcon} style={{ width: 14 }} alt="-" />
+                            </IconButton>
+                            <Box sx={{ width: 60, height: 32, border: '1px solid #e0e0e0', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Typography sx={{ fontWeight: 500 }}>{getQuantidade(produto.id)}</Typography>
+                            </Box>
+                            <IconButton onClick={() => handleAdd(produto)} sx={{ bgcolor: '#cfd8dc', width: 32, height: 32, '&:hover': { bgcolor: '#b0bec5' } }}>
+                                <img src={AddIcon} style={{ width: 14 }} alt="+" />
+                            </IconButton>
+                        </Box>
+                        <Button variant="contained" fullWidth onClick={() => handleAdd(produto)} sx={{ bgcolor: '#0097D8', fontWeight: 'bold', '&:hover': { bgcolor: '#007bb2' } }}>
+                            ADICIONAR
+                        </Button>
+                    </Box>
+                </Card>
+            </Grid>
+        ))}
+    </Grid>
+
+    <Box mt={8} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Typography variant="h5" sx={{ mb: 3, borderBottom: '1px solid #eeeeee', pb: 1, color: '#546e7a', fontWeight: 500 }}>
+            Dados do Cliente
+        </Typography>
+        <Grid container spacing={3}>
+            <Grid item xs={12} sm={5}>
+                <Field name="nome" component={renderTextField} label="Nome" placeholder="Nome do cliente aqui" />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+                <Field name="email" component={renderTextField} label="Email" placeholder="Digite seu email aqui" />
+            </Grid>
+            <Grid item xs={12} sm={3}>
+                <Field name="sexo" component={renderSelectField} label="Sexo">
+                    <MenuItem value="">Selecione</MenuItem>
+                    <MenuItem value="Masculino">Masculino</MenuItem>
+                    <MenuItem value="Feminino">Feminino</MenuItem>
+                </Field>
+            </Grid>
+        </Grid>
+        <Box mt={6} display="flex" flexDirection="column" alignItems="flex-end">
+            <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#546e7a', mb: 2 }}>
+                Total: R$ {total.toFixed(2).replace('.', ',')}
+            </Typography>
+            <Button type="submit" variant="contained" sx={{ bgcolor: '#FF9800', px: 8, py: 1.5, fontSize: '1.1rem', fontWeight: 'bold', '&:hover': { bgcolor: '#e68900' } }}>
+                FINALIZAR COMPRA
+            </Button>
         </Box>
+    </Box>
+</Container>
     );
 };
 
-export default Produtos;
+const validate = values => {
+    const errors = {};
+    if (!values.nome) errors.nome = "Campo Obrigatório";
+    if (!values.email) {
+        errors.email = "Campo Obrigatório";
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+        errors.email = 'E-mail inválido';
+    }
+    return errors;
+};
+
+export default reduxForm({
+    form: "checkout",
+    validate: validate,
+    destroyOnUnmount: false
+})(Produtos);

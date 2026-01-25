@@ -1,32 +1,45 @@
 import { createSlice, combineReducers } from '@reduxjs/toolkit';
-import { reducer as formReducer} from 'redux-form';
+import { reducer as formReducer } from 'redux-form';
 
 const initialState = {
-    cliente: { nome: '', email: ''},
     itens: [],
     total: 0,
 };
 
-const carrinhoSlice = createSlice ({
+const carrinhoSlice = createSlice({
     name: 'carrinho',
     initialState,
-        reducers: {
-            adicionarItem: (state, action) => {
-                state.itens.push(action.payload);
-                state.total += action.payload.preco * action.payload.quantidade;
-            },
-            salvarDadosCliente: (state, action) => {
-                state.cliente = action.payload;
-            },
-            resetarCarrinho: () => initialState,
+    reducers: {
+        adicionarItem: (state, action) => {
+            const item = state.itens.find(i => i.id == action.payload.id);
+            if (item) {
+                item.quantidade += 1;
+            } else {
+                state.itens.push({ ...action.payload, quantidade: 1 });
+            }
+            state.total += action.payload.preco;
         },
+        removerItem: (state, action) => {
+            const index = state.itens.findIndex(i => i.id === action.payload);
+            if (index !== -1) {
+                state.total -= state.itens[index].preco;
+                if (state.itens[index].quantidade > 1) {
+                    state.itens[index].quantidade -= 1;
+                } else {
+                    state.itens.splice(index, 1);
+                }
+            }
+        },
+        resetarCarrinho: () => initialState,
+    },
 });
 
-export const { adicionarItem, salvarDadosCliente, resetarCarrinho } = carrinhoSlice.actions;
+export const { adicionarItem, removerItem, resetarCarrinho } = carrinhoSlice.actions;
 
+// O segredo está aqui: exportar o combineReducers corretamente
 const rootReducer = combineReducers({
     carrinho: carrinhoSlice.reducer,
     form: formReducer
 });
 
-export default carrinhoSlice.reducer;
+export default rootReducer;
