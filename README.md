@@ -50,18 +50,19 @@ A implementação do PersistGate foi crucial para evitar que a aplicação tenta
 ```bash
 git clone https://github.com/lehwees/xbrain_teste
 ```
-
 Use o gerenciador de pacotes npm para instalar as dependências do projeto
-
-```bash
-npm install
-```
 ```bash
 cd xbrain_teste
 ```
 ```bash
+npm install
+```
+```bash
 npm run dev
 ```
+## Melhorias
+Realizar tratamento de erros. 
+Ex: Caso o sistema caia ou a API falhe, exibir uma ilustração. 
 
 ## 
 

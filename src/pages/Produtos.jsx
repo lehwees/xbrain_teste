@@ -74,9 +74,11 @@ let Produtos = (props) => {
     navigate('/finalizacao');
   };
 
+  console.log(total)
+
   return (
     <Container maxWidth="lg" sx={{ py: 8, bgcolor: '#fff' }}>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form noValidate onSubmit={handleSubmit(onSubmit)}>
         <Typography variant="h5" sx={{ mb: 3, borderBottom: '1px solid #eeeeee', pb: 1, color: '#546e7a', fontWeight: 500 }}>
           Produtos
         </Typography>
@@ -178,6 +180,7 @@ let Produtos = (props) => {
             <Button
               type="submit"
               variant="contained"
+              disabled={!total}
               sx={(theme) => {
                 return {
                   bgcolor: '#FF9800', px: 5, py: 1.2, fontSize: '1.1rem', fontWeight: 'bold',
