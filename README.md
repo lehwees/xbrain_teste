@@ -8,17 +8,13 @@ Este projeto é uma aplicação de e-commerce moderna desenvolvida com React, fo
 
 ```bash
 Catálogo Dinâmico: Listagem de produtos com efeitos interativos de "véu informativo" (hover).
-```
-```bash
+
 Gestão de Carrinho: Sistema de adição e remoção de itens com atualização de preço em tempo real.
-```
-```bash
+
 Cálculo Automático: Aplicação de descontos (10% OFF à vista) e cálculo de parcelamento.
-```
-```bash
+
 Checkout Validado: Formulário de dados do cliente com validação de campos obrigatórios via Redux Form.
-```
-```bash
+
 Persistência de Sessão: Uso de LocalStorage para manter o carrinho ativo mesmo após o fechamento do navegador ou refresh da página.
 ```
 ## Tecnologias e Funcionalidas
