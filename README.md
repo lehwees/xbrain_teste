@@ -28,8 +28,6 @@ Redux Form: Controle e validação de submissão de formulários.
 
 Redux Persist: Persistência do estado do carrinho no armazenamento local.
 
-Redux Persist: Persistência do estado do carrinho no armazenamento local.
-
 Material UI (MUI): Biblioteca de componentes para design consistente e responsivo.
 
 React Router Dom: Gerenciamento de rotas e navegação SPA.
