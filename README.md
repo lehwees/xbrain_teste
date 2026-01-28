@@ -21,23 +21,17 @@ Persistência de Sessão: Uso de LocalStorage para manter o carrinho ativo mesmo
 
 ```bash
 React (Vite): Framework principal para construção da interface.
-```
-```bash
+
 Redux Toolkit: Gerenciamento de estado global previsível.
-```
-```bash
+
 Redux Form: Controle e validação de submissão de formulários.
-```
-```bash
+
 Redux Persist: Persistência do estado do carrinho no armazenamento local.
-```
-```bash
+
 Redux Persist: Persistência do estado do carrinho no armazenamento local.
-```
-```bash
+
 Material UI (MUI): Biblioteca de componentes para design consistente e responsivo.
-```
-```bash
+
 React Router Dom: Gerenciamento de rotas e navegação SPA.
 ```
 ## Desafios Técnicos Superados
