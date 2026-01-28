@@ -1,12 +1,9 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Box, Typography, Button, Paper, Container } from '@mui/material';
+import { Box, Button, Container, Paper, Typography } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { reset } from 'redux-form';
-import { resetarCarrinho } from '../redux/reducers';
-
-// Certifique-se que o arquivo purchase.png está nesta pasta
 import purchaseImg from "../assets/produtos/purchase.png";
+import { resetarCarrinho } from '../redux/reducers';
 
 function Finalizacao() {
     const navigate = useNavigate();

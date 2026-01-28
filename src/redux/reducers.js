@@ -36,7 +36,6 @@ const carrinhoSlice = createSlice({
 
 export const { adicionarItem, removerItem, resetarCarrinho } = carrinhoSlice.actions;
 
-// O segredo está aqui: exportar o combineReducers corretamente
 const rootReducer = combineReducers({
     carrinho: carrinhoSlice.reducer,
     form: formReducer

@@ -1,7 +1,6 @@
-import React from "react";
-import { Routes, Route, Navigate } from 'react-router-dom';
-import Produtos from "./pages/Produtos";
+import { Navigate, Route, Routes } from 'react-router-dom';
 import Finalizacao from './pages/Finalizacao';
+import Produtos from "./pages/Produtos";
 
 function App(){
   return (
